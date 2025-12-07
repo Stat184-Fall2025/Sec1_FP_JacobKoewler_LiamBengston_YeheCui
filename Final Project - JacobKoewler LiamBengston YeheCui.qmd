@@ -1,0 +1,45 @@
+---
+title: "Predicting ERA - Final Project"
+author: "Jacob Koewler, Liam Bengston, Yehe Cui"
+date: "05 Dec 2025"
+date-modified: now
+format: 
+  pdf: 
+    toc: false
+    number-sections: true
+    number-depth: 5
+    fig-align: center
+    cap-location: top
+    geometry: 
+      - top=1in
+      - left=1in
+      - right=1in
+      - bottom=1in
+    colorlinks: true
+execute: 
+  echo: false
+  warning: false
+---
+
+## Overview
+
+From the start, we knew we wanted to focus on sports analytics. We quickly settled on Baseball/MLB due to the vast amounts of public data that is easily accessible. We found all of our data on [baseball savant](https://baseballsavant.mlb.com/leaderboard/custom?year=2025%2C2024%2C2023%2C2022%2C2021%2C2020%2C2019%2C2018%2C2017%2C2016%2C2015&type=pitcher&filter=&min=q&selections=pa%2Ck_percent%2Cbb_percent%2Cwoba%2Cxwoba%2Csweet_spot_percent%2Cbarrel_batted_rate%2Chard_hit_percent%2Cavg_best_speed%2Cavg_hyper_speed%2Cwhiff_percent%2Cswing_percent&chart=false&x=pa&y=pa&r=no&chartType=beeswarm&sort=xwoba&sortDir=asc). We also decided at this point our goal would be to find which baseball statistic is the best predictor of ERA. Once we had the data, We wrangled it in order to be able to create good data visualizations. From these, we will be able to determine which statistic is the best predictor of ERA.
+
+## Baseball Context
+
+WHIP, OBP, K%, BB%
+
+## Data Wrangling
+
+
+## Data Visualizations and Results
+
+
+
+## Code Appendix: 
+```{r ref.label=knitr::all_labels()} 
+#| echo: true 
+#| eval: false 
+```
+
+
