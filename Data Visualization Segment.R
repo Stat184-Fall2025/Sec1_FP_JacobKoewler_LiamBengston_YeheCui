@@ -50,9 +50,9 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "K% vs ERA Over the Past Decade",
     x = "K%",
     y = "ERA"
   ) + 
@@ -67,9 +67,9 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "BB% vs ERA Over the Past Decade",
     x = "BB%",
     y = "ERA"
   ) + 
@@ -85,9 +85,9 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "OBP vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "OBP vs ERA Over the Past Decade",
     x = "OBP",
     y = "ERA"
   ) + 
@@ -105,7 +105,7 @@ ggplot(
 ) +
   geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "WHIP vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "WHIP vs ERA Over the Past Decade",
     x = "WHIP",
     y = "ERA"
   ) + 
