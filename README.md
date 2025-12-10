@@ -1,12 +1,17 @@
-# Project Title
+# Predicting ERA
 
-Write a 1-2 sentences that quickly and clearly convey what your repo is for.
+This project is about seeing which baseball statistic (K%, BB%, WHIP, OBP) is 
+the best predictor for a pitcher's ERA.
 
 The Project is based on the data of baseball statistics with information of different players.
 
 ## Overview
 
-Expand on those introductory sentences with a brief but informative description of your project's purpose and goals. This section should help visitors decide whether they should dig deeper into your repo/project.
+Our main goal is to see which variable is the best predictor of ERA by creating 
+data visualizations for each with the different variables being on the x-axis, 
+and the ERA being on the Y-axis. From these visualization, we will be able to 
+see the correlation for each, which will tell us which is the best predictor for 
+ERA.
 
 We would like to give a much clearer understanding of our baseball players by providing a direct visualization with data and graphs.
 
