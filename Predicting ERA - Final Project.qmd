@@ -27,7 +27,7 @@ From the start, we knew we wanted to focus on sports analytics. We quickly settl
 
 ## Baseball Context
 
-WHIP, OBP, K%, BB%
+We are looking at 4 different predictors for Earned run average (ERA): WHIP, OBP, K%, and BB%. ERA is calculated by dividing the amount of runs that the pitcher allowed by the amount of innings pitched, all multiplied by 9. A lower ERA means that a pitcher gives up less runs. WHIP (Walks plus hits per inning pitched) is calculated how it sounds. The total amount of Walks plus the hits a pitcher gives up, all divided by the total innings pitched. The lower the WHIP, the less base runners a pitcher allows. OBP (On Base Percentage) is similar to WHIP, but with the addition of Hit by Pitch. It measures how often batters reaches base against a pitcher. For pitchers, A lower OBP is better. The next two are K% (Strikeout Percentage) and BB% (Walk Percentage). Each measures the percent of at-bats that end in Strikeouts or Walks. A lower BB% is better and a higher K% is better. 
 
 ## Data Wrangling
 
