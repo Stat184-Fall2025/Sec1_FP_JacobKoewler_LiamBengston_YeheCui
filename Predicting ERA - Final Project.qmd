@@ -26,11 +26,56 @@ execute:
 From the start, we knew we wanted to focus on sports analytics. We quickly settled on Baseball/MLB due to the vast amounts of public data that is easily accessible. We found all of our data on [baseball savant](https://baseballsavant.mlb.com/leaderboard/custom?year=2025%2C2024%2C2023%2C2022%2C2021%2C2020%2C2019%2C2018%2C2017%2C2016%2C2015&type=pitcher&filter=&min=q&selections=pa%2Ck_percent%2Cbb_percent%2Cwoba%2Cxwoba%2Csweet_spot_percent%2Cbarrel_batted_rate%2Chard_hit_percent%2Cavg_best_speed%2Cavg_hyper_speed%2Cwhiff_percent%2Cswing_percent&chart=false&x=pa&y=pa&r=no&chartType=beeswarm&sort=xwoba&sortDir=asc). We also decided at this point our goal would be to find which baseball statistic is the best predictor of ERA. Once we had the data, We wrangled it in order to be able to create good data visualizations. From these, we will be able to determine which statistic is the best predictor of ERA.
 
 ## Baseball Context
-
 We are looking at 4 different predictors for Earned run average (ERA): WHIP, OBP, K%, and BB%. ERA is calculated by dividing the amount of runs that the pitcher allowed by the amount of innings pitched, all multiplied by 9. A lower ERA means that a pitcher gives up less runs. WHIP (Walks plus hits per inning pitched) is calculated how it sounds. The total amount of Walks plus the hits a pitcher gives up, all divided by the total innings pitched. The lower the WHIP, the less base runners a pitcher allows. OBP (On Base Percentage) is similar to WHIP, but with the addition of Hit by Pitch. It measures how often batters reaches base against a pitcher. For pitchers, A lower OBP is better. The next two are K% (Strikeout Percentage) and BB% (Walk Percentage). Each measures the percent of at-bats that end in Strikeouts or Walks. A lower BB% is better and a higher K% is better. 
 
 ## Data Wrangling
 
+
+```{r}
+# Step 1: Load Packages
+library(tidyverse)
+library(rvest)
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Step 2: Import Raw Data
+Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
+
+# Step 3: Split Name into First and Last Name
+Raw_Statistics_Separated <- Raw_Statistics %>%
+  separate_wider_delim(
+    cols = `last_name..first_name`,
+    delim = ",",
+    names = c("Last_Name", "First_Name"),
+  )
+
+# Step 4: Combine Names
+Raw_Statistics_Names <- Raw_Statistics_Separated %>%
+  unite(
+    col = "Name",
+    First_Name,
+    Last_Name,
+    sep = " ")
+
+# Step 4: Rename Columns
+Raw_Statistics_Renamed <- Raw_Statistics_Names %>%
+  rename("Games_Pitched" = p_game,
+         "Innings_Pitched" = p_formatted_ip,
+         "Strikeout_Percentage" = k_percent,
+         "Walk_Percentage" = bb_percent,
+         "ERA" = p_era,
+         "On_Base_Percentage" = on_base_percent)
+
+
+# Step 5: Calcuate WHIP
+Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
+  mutate("WHIP" = (walk + hit)/(Innings_Pitched))
+
+# Step 6: Remove Extra Columns
+Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>%
+  select(Name, Strikeout_Percentage, Walk_Percentage, On_Base_Percentage, WHIP, ERA)
+```
 
 ## Data Visualizations and Results
 
