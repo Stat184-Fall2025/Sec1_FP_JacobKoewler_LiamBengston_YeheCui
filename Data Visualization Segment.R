@@ -34,7 +34,7 @@ Raw_Statistics_Renamed <- Raw_Statistics_Names %>%
          "On_Base_Percentage" = on_base_percent)
 
 
-# Step 5: Calcuate WHIP
+# Step 5: Calculate WHIP
 Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
   mutate("WHIP" = (walk + hit)/(Innings_Pitched))
 
@@ -56,7 +56,7 @@ ggplot(
     x = "K%",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() # a visual polish adjustment
 
 # Step 8
@@ -73,7 +73,7 @@ ggplot(
     x = "BB%",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
@@ -91,11 +91,11 @@ ggplot(
     x = "OBP",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
-# Step 9
+# Step 10
 ggplot(
   data = Cleaned_ERA_Statistics, 
   mapping = aes(
@@ -109,6 +109,6 @@ ggplot(
     x = "WHIP",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
