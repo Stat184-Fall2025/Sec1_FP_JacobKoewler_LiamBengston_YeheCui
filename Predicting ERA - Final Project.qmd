@@ -1,0 +1,187 @@
+---
+title: "Predicting ERA - Final Project"
+author: "Jacob Koewler, Liam Bengston, Yehe Cui"
+date: "05 Dec 2025"
+date-modified: "2025-12-17"
+format: 
+  pdf: 
+    toc: false
+    number-sections: true
+    number-depth: 5
+    fig-align: center
+    cap-location: top
+    geometry: top=1in, left=1in, right=1in, bottom=1in
+    colorlinks: true
+execute: 
+  echo: false
+  warning: false
+---
+
+## Overview
+
+From the start, we knew we wanted to focus on sports analytics. We quickly settled on Baseball/MLB due to the vast amounts of public data that is easily accessible. We found all of our data on [baseball savant](https://baseballsavant.mlb.com/leaderboard/custom?year=2025%2C2024%2C2023%2C2022%2C2021%2C2020%2C2019%2C2018%2C2017%2C2016%2C2015&type=pitcher&filter=&min=q&selections=pa%2Ck_percent%2Cbb_percent%2Cwoba%2Cxwoba%2Csweet_spot_percent%2Cbarrel_batted_rate%2Chard_hit_percent%2Cavg_best_speed%2Cavg_hyper_speed%2Cwhiff_percent%2Cswing_percent&chart=false&x=pa&y=pa&r=no&chartType=beeswarm&sort=xwoba&sortDir=asc). We also decided at this point our goal would be to find which baseball statistic is the best predictor of ERA. Once we had the data, We wrangled it in order to be able to create good data visualizations. From these, we will be able to determine which statistic is the best predictor of ERA.
+
+## Baseball Context
+
+WHIP, OBP, K%, BB%
+
+## Data Wrangling
+
+
+```{r}
+# Step 1: Load Packages
+library(tidyverse)
+library(rvest)
+library(ggplot2)
+library(dplyr)
+library(readr)
+
+# Step 2: Import Raw Data
+Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
+
+# Step 3: Split Name into First and Last Name
+Raw_Statistics_Separated <- Raw_Statistics %>%
+  separate_wider_delim(
+    cols = `last_name..first_name`,
+    delim = ",",
+    names = c("Last_Name", "First_Name"),
+  )
+
+# Step 4: Combine Names
+Raw_Statistics_Names <- Raw_Statistics_Separated %>%
+  unite(
+    col = "Name",
+    First_Name,
+    Last_Name,
+    sep = " ")
+
+# Step 4: Rename Columns
+Raw_Statistics_Renamed <- Raw_Statistics_Names %>%
+  rename("Games_Pitched" = p_game,
+         "Innings_Pitched" = p_formatted_ip,
+         "Strikeout_Percentage" = k_percent,
+         "Walk_Percentage" = bb_percent,
+         "ERA" = p_era,
+         "On_Base_Percentage" = on_base_percent)
+
+
+# Step 5: Calcuate WHIP
+Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
+  mutate("WHIP" = (walk + hit)/(Innings_Pitched))
+
+# Step 6: Remove Extra Columns
+Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>%
+  select(Name, Strikeout_Percentage, Walk_Percentage, On_Base_Percentage, WHIP, ERA)
+```
+
+## Data Visualizations and Results
+
+``` {r}
+
+#| label: fig-nameLineGraph
+#| fig-cap: "Attribute correlation with ERA"
+#| fig-pos: "H"
+#| fig-alt: "Correlation of these four attributes with ERA"
+#| echo: false
+
+```
+
+
+``` {r}
+  
+# Step 7:
+f1 <- ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = Strikeout_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  labs(
+    title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
+    x = "K%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() # a visual polish adjustment
+```
+
+``` {r}
+
+# Step 8
+f2 <- ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = Walk_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  labs(
+    title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
+    x = "BB%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+```
+
+``` {r}
+
+# Step 9
+f3 <- ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = On_Base_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  labs(
+    title = "OBP vs ERA over a 10-Year Span (Excluding 2020)",
+    x = "OBP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+```
+
+``` {r}
+
+# Step 10
+f4 <- ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = WHIP,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  labs(
+    title = "WHIP vs ERA over a 10-Year Span (Excluding 2020)",
+    x = "WHIP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+
+```
+
+``` {r}
+::: {layout-ncol=2}
+
+
+
+:::
+
+## Code Appendix: 
+```{r ref.label=knitr::all_labels()} 
+#| echo: true 
+#| eval: false 
+```
+
+
