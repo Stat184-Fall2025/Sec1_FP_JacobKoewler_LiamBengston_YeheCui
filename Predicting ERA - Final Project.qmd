@@ -53,7 +53,7 @@ library(kableExtra)
 
 
 # Step 2: Import Raw Data
-Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
+Raw_Statistics <- read.csv("C:/Users/liamb/OneDrive/Documents/R work/stats (1).csv")
 
 # Step 3: Split Name into First and Last Name
 Raw_Statistics_Separated <- Raw_Statistics %>% 
@@ -117,7 +117,7 @@ library(dplyr)
 library(readr)
 
 # Step 2: Import Raw Data
-Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
+Raw_Statistics <- read.csv("C:/Users/liamb/OneDrive/Documents/R work/stats (1).csv")
 
 # Step 3: Split Name into First and Last Name
 Raw_Statistics_Separated <- Raw_Statistics %>% 
@@ -162,7 +162,134 @@ Cleaned_ERA_Statistics$WHIP <- round(Cleaned_ERA_Statistics$WHIP, digits = 2)
 
 ## Data Visualizations and Results
 
+``` {r}
 
+#| label: fig-nameLineGraph
+#| fig-cap: "Attribute correlation with ERA"
+#| fig-pos: "H"
+#| fig-alt: "Correlation between K% and ERA"
+#| echo: false
+  
+# Step 7:
+r2 <- summary(
+  lm(ERA ~ Strikeout_Percentage,
+  data = Cleaned_ERA_Statistics))$r.squared
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = Strikeout_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  labs(
+    title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R² = ", round(r2, digits = 3)),
+    x = "K%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() # a visual polish adjustment
+```
+
+``` {r}
+
+#| label: fig-nameLineGraph
+#| fig-cap: "Attribute correlation with ERA"
+#| fig-pos: "H"
+#| fig-alt: "Correlation between BB% and ERA"
+#| echo: false
+
+# Step 8
+r2 <- summary(
+  lm(ERA ~ Walk_Percentage,
+  data = Cleaned_ERA_Statistics))$r.squared
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = Walk_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  labs(
+    title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R² = ", round(r2, digits = 3)),
+    x = "BB%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+```
+
+``` {r}
+
+#| label: fig-nameLineGraph
+#| fig-cap: "Attribute correlation with ERA"
+#| fig-pos: "H"
+#| fig-alt: "Correlation between OBP and ERA"
+#| echo: false
+
+# Step 9
+r2 <- summary(
+  lm(ERA ~ On_Base_Percentage,
+  data = Cleaned_ERA_Statistics))$r.squared
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = On_Base_Percentage,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  labs(
+    title = "OBP vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R² = ", round(r2, digits = 3)),
+    x = "OBP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+```
+
+``` {r}
+
+#| label: fig-nameLineGraph
+#| fig-cap: "Attribute correlation with ERA"
+#| fig-pos: "H"
+#| fig-alt: "Correlation between WHIP and ERA"
+#| echo: false
+
+# Step 10
+r2 <- summary(
+  lm(ERA ~ WHIP,
+  data = Cleaned_ERA_Statistics))$r.squared
+
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = WHIP,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  labs(
+    title = "WHIP vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R² = ", round(r2, digits = 3)),
+    x = "WHIP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+
+```
 
 ## Code Appendix: 
 ```{r ref.label=knitr::all_labels()} 
