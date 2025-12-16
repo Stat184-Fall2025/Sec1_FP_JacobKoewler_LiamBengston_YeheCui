@@ -38,10 +38,12 @@ Raw_Statistics_Renamed <- Raw_Statistics_Names %>% # rename columns for ease of 
 Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
   mutate( # Calculate WHIP using mutate to create a new column
     "WHIP" = (walk + hit)/(Innings_Pitched) # use PEMDAS to ensure proper calculation
-    ) 
+)
 
 # Step 6: Remove Extra Columns
 Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>% # remove extra columns so only useful data remains
   select(Name, Strikeout_Percentage, Walk_Percentage, On_Base_Percentage, WHIP, ERA)
 
+# Step 7: Round WHIP
+Cleaned_ERA_Statistics$WHIP <- round(Cleaned_ERA_Statistics$WHIP, digits = 2)
 
