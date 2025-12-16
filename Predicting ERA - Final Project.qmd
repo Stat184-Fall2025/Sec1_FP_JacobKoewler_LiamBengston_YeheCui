@@ -21,7 +21,7 @@ execute:
   warning: false
 ---
 
-## Overview
+# Overview
 
 From the start, we knew we wanted to focus on sports analytics. We quickly settled on Baseball/MLB due to the vast amounts of public data that is easily accessible. We found all of our data on [baseball savant](https://baseballsavant.mlb.com/leaderboard/custom?year=2025%2C2024%2C2023%2C2022%2C2021%2C2020%2C2019%2C2018%2C2017%2C2016%2C2015&type=pitcher&filter=&min=q&selections=pa%2Ck_percent%2Cbb_percent%2Cwoba%2Cxwoba%2Csweet_spot_percent%2Cbarrel_batted_rate%2Chard_hit_percent%2Cavg_best_speed%2Cavg_hyper_speed%2Cwhiff_percent%2Cswing_percent&chart=false&x=pa&y=pa&r=no&chartType=beeswarm&sort=xwoba&sortDir=asc). We also decided at this point our goal would be to find which baseball statistic is the best indicator of ERA. Once we had the data, We wrangled it in order to be able to create good data visualizations. From these, we will be able to determine which statistic is the best indicator of ERA.
 
@@ -32,7 +32,7 @@ We are looking at 4 different indicators for Earned run average (ERA): WHIP, OBP
 
 We are also excluding the 2020 season, due to the effects of the Pandemic. This led to a shortened 60 game season instead of the normal 162 games, which led to some statistics being not truly being representative of the real data. 
 
-## Data Wrangling
+# Data Wrangling
 
 To wrangle the data, we first had to import the data and load packages. Second, we split the names column into two separate columns, one for first name and one for last name. Then, we merged them back into one column to transform the names from "Colon, Bartolo" into "Bartolo Colon". Then, we renamed the columns, calculated WHIP, and then removed excess columns. Finally, we rounded our statistics and used the kable function to create a table. This is the sample data table from our cleaned data with 10 out of 1112 rows..
 
@@ -160,14 +160,14 @@ Cleaned_ERA_Statistics$WHIP <- round(Cleaned_ERA_Statistics$WHIP, digits = 2)
 
 ```
 
-## Data Visualizations and Results
+# Data Visualizations and Results
 
 ``` {r}
 
 #| label: fig-nameLineGraph
 #| fig-cap: "Attribute correlation with ERA"
 #| fig-pos: "H"
-#| fig-alt: "Correlation between K% and ERA"
+#| fig-alt: "Scatter plot of K% vs. ERA over a ten-year span, excluding 2020, showing a downward trend with a blue trend line and gray confidence interval"
 #| echo: false
   
 # Step 7:
@@ -193,12 +193,15 @@ ggplot(
   theme_classic() # a visual polish adjustment
 ```
 
+## Long Description for K%
+The image is a scatter plot illustrating the relationship between strikeout percentage (K%) and earned run average (ERA) over a ten-year span, excluding 2020. The horizontal axis represents K%, ranging from 10 to 40, while the vertical axis represents ERA, ranging from 2 to 7. Numerous small, gray circles are scattered across the chart, indicating individual data points. A blue line with a downward slope runs through the center of the plot, representing a trend line, with a gray shaded area around it indicating the confidence interval.
+
 ``` {r}
 
 #| label: fig-nameLineGraph
 #| fig-cap: "Attribute correlation with ERA"
 #| fig-pos: "H"
-#| fig-alt: "Correlation between BB% and ERA"
+#| fig-alt: "Scatter plot showing a weak negative correlation between BB% and ERA over a 10-year span, excluding 2020"
 #| echo: false
 
 # Step 8
@@ -225,12 +228,15 @@ ggplot(
   scale_x_reverse()
 ```
 
+## Long Description for BB%
+The image is a scatter plot depicting the relationship between BB% (Base on Balls Percentage) and ERA (Earned Run Average) over a 10-year span, excluding the year 2020. The x-axis represents BB%, ranging from 16 to 4, while the y-axis represents ERA, ranging from 2 to 7. The plot contains numerous small, light gray dots scattered throughout, representing individual data points. A blue trend line traverses the plot diagonally from upper left to lower right, indicating a negative correlation between BB% and ERA. The trend line is surrounded by a gray shaded region that illustrates the confidence interval. The background of the plot is white, and the text is black.
+
 ``` {r}
 
 #| label: fig-nameLineGraph
 #| fig-cap: "Attribute correlation with ERA"
 #| fig-pos: "H"
-#| fig-alt: "Correlation between OBP and ERA"
+#| fig-alt: "Scatter plot showing a strong negative correlation between OBP and ERA over ten years, excluding 2020"
 #| echo: false
 
 # Step 9
@@ -256,6 +262,9 @@ ggplot(
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 ```
+
+## Long Description for OBP
+The image is a scatter plot showing the relationship between OBP (On-base Percentage) and ERA (Earned Run Average) over a ten-year span, excluding the year 2020. The x-axis represents OBP, ranging from 0.20 to 0.40, while the y-axis represents ERA, ranging from 2 to 6. Data points are represented by small gray dots scattered across the plot, showing a downward trend from left to right. A blue trend line runs diagonally from the top left to the bottom right, indicating a negative correlation between OBP and ERA. A shaded gray area around the line illustrates the confidence interval. The title of the plot is "OBP vs ERA over a 10-Year Span (Excluding 2020)."
 
 ``` {r}
 
@@ -291,7 +300,10 @@ ggplot(
 
 ```
 
-## Code Appendix: 
+## Long Description for WHIP
+The image is a scatter plot graph illustrating the relationship between WHIP (Walks plus Hits per Inning Pitched) and ERA (Earned Run Average) over a ten-year span, excluding 2020. The x-axis is labeled "WHIP" and ranges approximately from 0.9 to 1.8. The y-axis is labeled "ERA" and ranges from 2 to 6. A blue trend line, with a shaded confidence interval, slopes downward from left to right, indicating a negative correlation between WHIP and ERA. Numerous small, gray data points are scattered densely around the trend line.
+
+# Code Appendix: 
 ```{r ref.label=knitr::all_labels()} 
 #| echo: true 
 #| eval: false 
