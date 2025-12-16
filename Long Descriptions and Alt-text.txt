@@ -1,0 +1,18 @@
+﻿K%
+Long: The image is a scatter plot illustrating the relationship between strikeout percentage (K%) and earned run average (ERA) over a ten-year span, excluding 2020. The horizontal axis represents K%, ranging from 10 to 40, while the vertical axis represents ERA, ranging from 2 to 7. Numerous small, gray circles are scattered across the chart, indicating individual data points. A blue line with a downward slope runs through the center of the plot, representing a trend line, with a gray shaded area around it indicating the confidence interval.
+Alt: Scatter plot of K% vs. ERA over a ten-year span, excluding 2020, showing a downward trend with a blue trend line and gray confidence interval.
+
+
+BB%
+Long: The image is a scatter plot depicting the relationship between BB% (Base on Balls Percentage) and ERA (Earned Run Average) over a 10-year span, excluding the year 2020. The x-axis represents BB%, ranging from 16 to 4, while the y-axis represents ERA, ranging from 2 to 7. The plot contains numerous small, light gray dots scattered throughout, representing individual data points. A blue trend line traverses the plot diagonally from upper left to lower right, indicating a negative correlation between BB% and ERA. The trend line is surrounded by a gray shaded region that illustrates the confidence interval. The background of the plot is white, and the text is black.
+Alt: Scatter plot showing negative correlation between BB% and ERA over a 10-year span, excluding 2020.
+
+
+OBP
+Long: The image is a scatter plot showing the relationship between OBP (On-base Percentage) and ERA (Earned Run Average) over a ten-year span, excluding the year 2020. The x-axis represents OBP, ranging from 0.20 to 0.40, while the y-axis represents ERA, ranging from 2 to 6. Data points are represented by small gray dots scattered across the plot, showing a downward trend from left to right. A blue trend line runs diagonally from the top left to the bottom right, indicating a negative correlation between OBP and ERA. A shaded gray area around the line illustrates the confidence interval. The title of the plot is "OBP vs ERA over a 10-Year Span (Excluding 2020)."
+Alt: Scatter plot showing a negative correlation between OBP and ERA over ten years, excluding 2020.
+
+
+WHIP
+Long: The image is a scatter plot graph illustrating the relationship between WHIP (Walks plus Hits per Inning Pitched) and ERA (Earned Run Average) over a ten-year span, excluding 2020. The x-axis is labeled "WHIP" and ranges approximately from 0.9 to 1.8. The y-axis is labeled "ERA" and ranges from 2 to 6. A blue trend line, with a shaded confidence interval, slopes downward from left to right, indicating a negative correlation between WHIP and ERA. Numerous small, gray data points are scattered densely around the trend line.
+Alt: Scatter plot showing negative correlation between WHIP and ERA over ten years, excluding 2020.
