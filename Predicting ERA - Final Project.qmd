@@ -21,7 +21,7 @@ execute:
   warning: false
 ---
 
-## Overview
+# Overview
 
 From the start, we knew we wanted to focus on sports analytics. We quickly settled on Baseball/MLB due to the vast amounts of public data that is easily accessible. We found all of our data on [baseball savant](https://baseballsavant.mlb.com/leaderboard/custom?year=2025%2C2024%2C2023%2C2022%2C2021%2C2020%2C2019%2C2018%2C2017%2C2016%2C2015&type=pitcher&filter=&min=q&selections=pa%2Ck_percent%2Cbb_percent%2Cwoba%2Cxwoba%2Csweet_spot_percent%2Cbarrel_batted_rate%2Chard_hit_percent%2Cavg_best_speed%2Cavg_hyper_speed%2Cwhiff_percent%2Cswing_percent&chart=false&x=pa&y=pa&r=no&chartType=beeswarm&sort=xwoba&sortDir=asc). We also decided at this point our goal would be to find which baseball statistic is the best indicator of ERA. Once we had the data, We wrangled it in order to be able to create good data visualizations. From these, we will be able to determine which statistic is the best indicator of ERA.
 
@@ -32,12 +32,11 @@ We are looking at 4 different indicators for Earned run average (ERA): WHIP, OBP
 
 We are also excluding the 2020 season, due to the effects of the Pandemic. This led to a shortened 60 game season instead of the normal 162 games, which led to some statistics being not truly being representative of the real data. 
 
-## Data Wrangling
+# Data Wrangling
 
 To wrangle the data, we first had to import the data and load packages. Second, we split the names column into two separate columns, one for first name and one for last name. Then, we merged them back into one column to transform the names from "Colon, Bartolo" into "Bartolo Colon". Then, we renamed the columns, calculated WHIP, and then removed excess columns. Finally, we rounded our statistics and used the kable function to create a table. This is the sample data table from our cleaned data with 10 out of 1112 rows..
 
 ```{r}
-
 #| label: tbl-frequency-pitching-data
 #| tbl-cap: "Frequency Table showing each pitcher and their stats for each season between 2015 and 2025 (excluding 2020)"
 #| tbl-alt: "Frequency Table showing each pitcher and their stats for each season between 2015 and 2025 (excluding 2020)"
@@ -45,50 +44,56 @@ To wrangle the data, we first had to import the data and load packages. Second, 
 # Step 1: Load Packages
 library(tidyverse)
 library(rvest)
-library(ggplot2)
-library(dplyr)
-library(readr)
+library(googlesheets4)
 library(janitor)
+library(knitr)
 library(kableExtra)
+library(psych)
 
 
 # Step 2: Import Raw Data
-Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
+
+gs4_deauth()
+Raw_Statistics <- read_sheet(
+  ss = "https://docs.google.com/spreadsheets/d/1aQGzS0Epzus4ZRMdT7VMvGddumRQdRsXYek41cmyLLU/edit?gid=884425286#gid=884425286",
+  n_max = 1115 # read all lines
+)
 
 # Step 3: Split Name into First and Last Name
+
 Raw_Statistics_Separated <- Raw_Statistics %>% 
   separate_wider_delim( # Separate one name column into two (First and Last)
-    cols = `last_name..first_name`, # original column
+    cols = `last_name, first_name`, # original column
     delim = ",", # delimiter
     names = c("Last_Name", "First_Name"), # new column names
   )
 
-# Step 4: Combine Names
-Raw_Statistics_Names <- Raw_Statistics_Separated %>% # Turn names from "Colon, Bartolo" into "Bartolo Colon"
+# Step 4: Combine Names so it's 'first last'
+Raw_Statistics_Names <- Raw_Statistics_Separated %>%
   unite( 
     col = "Name", # New Column name
     First_Name, # First name column
     Last_Name, # Last name column
     sep = " ") # Separate names with space
 
-# Step 4: Rename Columns
-Raw_Statistics_Renamed <- Raw_Statistics_Names %>% # rename columns for ease of use for those who aren't as familiar with baseball statistics
-  rename("Games_Pitched" = p_game,
-         "Innings_Pitched" = p_formatted_ip,
-         "Strikeout_Percentage" = k_percent,
-         "Walk_Percentage" = bb_percent,
+# Step 4: Rename Columns for ease of use later on
+Raw_Statistics_Renamed <- Raw_Statistics_Names %>% 
+  rename("GP" = p_game,
+         "IP" = p_formatted_ip,
+         "K_rate" = k_percent,
+         "BB_rate" = bb_percent,
          "ERA" = p_era,
-         "On_Base_Percentage" = on_base_percent)
+         "OBP" = on_base_percent)
 
 # Step 5: Calculate WHIP
 Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
   mutate( # Calculate WHIP using mutate to create a new column
-    "WHIP" = (walk + hit)/(Innings_Pitched) # use PEMDAS to ensure proper calculation
+    "WHIP" = (walk + hit)/(IP)
     ) 
 
 # Step 6: Remove Extra Columns
-Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>% # remove extra columns so only useful data remains
-  select(Name, Strikeout_Percentage, Walk_Percentage, On_Base_Percentage, WHIP, ERA)
+Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>%
+  select(Name, K_rate, BB_rate, OBP, WHIP, ERA)
 
 # Step 7: Round WHIP
 Cleaned_ERA_Statistics$WHIP <- round(Cleaned_ERA_Statistics$WHIP, digits = 2)
@@ -104,70 +109,149 @@ Frequency_Table %>%
 
 ```
 
+# Data Visualizations and Results
+
+``` {r}
+#| label: fig-correlation_plot
+#| fig-cap: "Attribute Correlation with ERA"
+#| fig-subcap: 
+#|   - "General Trend Between K% and ERA"
+#|   - "General Trend Between BB% and ERA"
+#|   - "General Trend Between OBP and ERA"
+#|   - "General Trend Between WHIP and ERA"
+#| layout-ncol: 2
+#| fig-alt: "Four graphs that show the correlation between ERA and specific statistics"
+
+# Step 10 K% Plot:
+x <- Cleaned_ERA_Statistics$ERA
+y <- Cleaned_ERA_Statistics$K_rate
+r <- cor( x, y, method = "pearson")
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = K_rate,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size to improve readability
+  labs(
+    title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R = ", round(r, digits = 3)),
+    x = "K%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit
+  theme_classic() # a visual polish adjustment
+
+# Step 11 BB% Plot
+x <- Cleaned_ERA_Statistics$ERA
+y <- Cleaned_ERA_Statistics$BB_rate
+r <- cor( x, y, method = "pearson")
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = BB_rate,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + # increased line size to improve readability
+  labs(
+    title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R = ", round(r, digits = 3)),
+    x = "BB%",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+
+# Step 12 OBP Plot
+
+x <- Cleaned_ERA_Statistics$ERA
+y <- Cleaned_ERA_Statistics$OBP
+r <- cor( x, y, method = "pearson")
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = OBP,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + #increased line size to improve readability
+  labs(
+    title = "OBP vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R = ", round(r, digits = 3)),
+    x = "OBP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+
+# Step 13 WHIP Plot
+
+r <- summary(
+  lm(ERA ~ WHIP,
+  data = Cleaned_ERA_Statistics))$r.squared
+
+
+ggplot(
+  data = Cleaned_ERA_Statistics, 
+  mapping = aes(
+    x = WHIP,
+    y = ERA,
+  )
+) +
+  geom_point(alpha = 0.2) + #increased line size to improve readability
+  labs(
+    title = "WHIP vs ERA over a 10-Year Span (Excluding 2020)",
+    subtitle = paste0("R = ", round(r, digits = 3)),
+    x = "WHIP",
+    y = "ERA"
+  ) + 
+  geom_smooth(alpha = 0.1) + # a line of best fit
+  theme_classic() + # a visual polish adjustment
+  scale_x_reverse()
+
+```
 
 ```{r}
+#| label: fig-correlation_table
+#| fig-cap: "Correlation Table of the Attributes"
+#| fig-alt: "Correlation heatmap showing relations between K_rate, BB_rate, OBP, WHIP, and ERA with a color gradient scale from -1 (red) to 1 (blue)."
+#| fig-width: 8
+#| fig-height: 6
 
-#| label: code-data-wrangling
+# Step 14 correlation table to see the relation between statistics
 
-# Step 1: Load Packages
-library(tidyverse)
-library(rvest)
-library(ggplot2)
-library(dplyr)
-library(readr)
-
-# Step 2: Import Raw Data
-Raw_Statistics <- read.csv("C:/College/GitHub Repos/Sec-1-FP-JacobKoewler-LiamBengston-YeheCui/stats (1).csv")
-
-# Step 3: Split Name into First and Last Name
-Raw_Statistics_Separated <- Raw_Statistics %>% 
-  separate_wider_delim( # Separate one name column into two (First and Last)
-    cols = `last_name..first_name`, # original column
-    delim = ",", # delimiter
-    names = c("Last_Name", "First_Name"), # new column names
-  )
-
-# Step 4: Combine Names
-Raw_Statistics_Names <- Raw_Statistics_Separated %>% # Turn names from "Colon, Bartolo" into "Bartolo Colon"
-  unite( 
-    col = "Name", # New Column name
-    First_Name, # First name column
-    Last_Name, # Last name column
-    sep = " ") # Separate names with space
-
-# Step 4: Rename Columns
-Raw_Statistics_Renamed <- Raw_Statistics_Names %>% # rename columns for ease of use for those who aren't as familiar with baseball statistics
-  rename("Games_Pitched" = p_game,
-         "Innings_Pitched" = p_formatted_ip,
-         "Strikeout_Percentage" = k_percent,
-         "Walk_Percentage" = bb_percent,
-         "ERA" = p_era,
-         "On_Base_Percentage" = on_base_percent)
-
-
-# Step 5: Calculate WHIP
-Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
-  mutate( # Calculate WHIP using mutate to create a new column
-    "WHIP" = (walk + hit)/(Innings_Pitched) # use PEMDAS to ensure proper calculation
-    ) 
-
-# Step 6: Remove Extra Columns
-Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>% # remove extra columns so only useful data remains
-  select(Name, Strikeout_Percentage, Walk_Percentage, On_Base_Percentage, WHIP, ERA)
-
-# Step 7: Round WHIP
-Cleaned_ERA_Statistics$WHIP <- round(Cleaned_ERA_Statistics$WHIP, digits = 2)
-
+cors <- cor(Cleaned_ERA_Statistics[, -1])
+corPlot(cors)
 ```
 
-## Data Visualizations and Results
+## Long descriptions for @fig-correlation_plot
+
+### Long Description for K% 
+The image is a scatter plot illustrating the relationship between strikeout percentage (K%) and earned run average (ERA) over a ten-year span, excluding 2020. The horizontal axis represents K%, ranging from 10 to 40, while the vertical axis represents ERA, ranging from 2 to 7. Numerous small, gray circles are scattered across the chart, indicating individual data points. A blue line with a downward slope runs through the center of the plot, representing a trend line, with a gray shaded area around it indicating the confidence interval.
+
+### Long Description for BB%
+The image is a scatter plot depicting the relationship between BB% (Base on Balls Percentage) and ERA (Earned Run Average) over a 10-year span, excluding the year 2020. The x-axis represents BB%, ranging from 16 to 4, while the y-axis represents ERA, ranging from 2 to 7. The plot contains numerous small, light gray dots scattered throughout, representing individual data points. A blue trend line traverses the plot diagonally from upper left to lower right, indicating a negative correlation between BB% and ERA. The trend line is surrounded by a gray shaded region that illustrates the confidence interval. The background of the plot is white, and the text is black.
+
+### Long Description for OBP
+The image is a scatter plot showing the relationship between OBP (On-base Percentage) and ERA (Earned Run Average) over a ten-year span, excluding the year 2020. The x-axis represents OBP, ranging from 0.20 to 0.40, while the y-axis represents ERA, ranging from 2 to 6. Data points are represented by small gray dots scattered across the plot, showing a downward trend from left to right. A blue trend line runs diagonally from the top left to the bottom right, indicating a negative correlation between OBP and ERA. A shaded gray area around the line illustrates the confidence interval. The title of the plot is "OBP vs ERA over a 10-Year Span (Excluding 2020)."
+
+### Long Description for WHIP
+The image is a scatter plot graph illustrating the relationship between WHIP (Walks plus Hits per Inning Pitched) and ERA (Earned Run Average) over a ten-year span, excluding 2020. The x-axis is labeled "WHIP" and ranges approximately from 0.9 to 1.8. The y-axis is labeled "ERA" and ranges from 2 to 6. A blue trend line, with a shaded confidence interval, slopes downward from left to right, indicating a negative correlation between WHIP and ERA. Numerous small, gray data points are scattered densely around the trend line.
+
+## Long descriptions for @fig-correlation_table
+The image is a correlation plot presented as a heatmap, depicting the relationships among five variables: K_rate, BB_rate, OBP, WHIP, and ERA. The plot is structured as a grid with rows and columns labeled with these variables. Each cell in the grid contains a numerical value representing the correlation coefficient between the corresponding pair of variables. The background color of each cell indicates the strength and direction of the correlation, using a gradient scale from blue to red. Blue shades represent positive correlations, while red shades denote negative correlations. The plot features a small color bar on the right, displaying a continuous range from -1 to 1, corresponding to the colors used in the plot. The diagonal cells show a perfect correlation of 1.00, displayed in dark blue. Other notable correlations include -0.64 between K_rate and OBP, and 0.99 between OBP and WHIP.
+
+## Results
+Of the four statistics that we observed, WHIP and OBP were the most correlated with ERA. The correlation table however shows that WHIP and OBP are nearly identical, implying that they are describing the same thing. Both statistics are a type of measure about how many runners a pitcher lets on base. This means that ERA is heavily influenced by the amount of runners a pitcher lets on base. By whatever measure you chose, be it WHIP or OBP, both show a strong negative correlation with ERA.
 
 
-
-## Code Appendix: 
-```{r ref.label=knitr::all_labels()} 
-#| echo: true 
-#| eval: false 
+# Code Appendix 
+```{r codeAppend, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE}
 ```
-
-
