@@ -34,7 +34,7 @@ Raw_Statistics_Renamed <- Raw_Statistics_Names %>%
          "On_Base_Percentage" = on_base_percent)
 
 
-# Step 5: Calcuate WHIP
+# Step 5: Calculate WHIP
 Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
   mutate("WHIP" = (walk + hit)/(Innings_Pitched))
 
@@ -50,13 +50,13 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "K% vs ERA Over the Past Decade",
     x = "K%",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() # a visual polish adjustment
 
 # Step 8
@@ -67,13 +67,13 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "BB% vs ERA Over the Past Decade",
     x = "BB%",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
@@ -85,17 +85,17 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.1) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "OBP vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "OBP vs ERA Over the Past Decade",
     x = "OBP",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
-# Step 9
+# Step 10
 ggplot(
   data = Cleaned_ERA_Statistics, 
   mapping = aes(
@@ -105,10 +105,10 @@ ggplot(
 ) +
   geom_point(alpha = 0.2) + # increased line size a little to improve readability
   labs(
-    title = "WHIP vs ERA over a 10-Year Span (Excluding 2020)",
+    title = "WHIP vs ERA Over the Past Decade",
     x = "WHIP",
     y = "ERA"
   ) + 
-  geom_smooth() + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
