@@ -44,6 +44,7 @@ To wrangle the data, we first had to import the data and load packages. Second, 
 # Step 1: Load Packages
 library(tidyverse)
 library(rvest)
+library(googlesheets4)
 library(janitor)
 library(knitr)
 library(kableExtra)
@@ -51,26 +52,32 @@ library(psych)
 
 
 # Step 2: Import Raw Data
-Raw_Statistics <- read.csv("C:/Users/liamb/OneDrive/Documents/R work/stats (1).csv")
+
+gs4_deauth()
+Raw_Statistics <- read_sheet(
+  ss = "https://docs.google.com/spreadsheets/d/1aQGzS0Epzus4ZRMdT7VMvGddumRQdRsXYek41cmyLLU/edit?gid=884425286#gid=884425286",
+  n_max = 1115 # read all lines
+)
 
 # Step 3: Split Name into First and Last Name
+
 Raw_Statistics_Separated <- Raw_Statistics %>% 
   separate_wider_delim( # Separate one name column into two (First and Last)
-    cols = `last_name..first_name`, # original column
+    cols = `last_name, first_name`, # original column
     delim = ",", # delimiter
     names = c("Last_Name", "First_Name"), # new column names
   )
 
-# Step 4: Combine Names
-Raw_Statistics_Names <- Raw_Statistics_Separated %>% # Turn names from "Colon, Bartolo" into "Bartolo Colon"
+# Step 4: Combine Names so it's 'first last'
+Raw_Statistics_Names <- Raw_Statistics_Separated %>%
   unite( 
     col = "Name", # New Column name
     First_Name, # First name column
     Last_Name, # Last name column
     sep = " ") # Separate names with space
 
-# Step 4: Rename Columns
-Raw_Statistics_Renamed <- Raw_Statistics_Names %>% # rename columns for ease of use for those who aren't as familiar with baseball statistics
+# Step 4: Rename Columns for ease of use later on
+Raw_Statistics_Renamed <- Raw_Statistics_Names %>% 
   rename("GP" = p_game,
          "IP" = p_formatted_ip,
          "K_rate" = k_percent,
@@ -81,11 +88,11 @@ Raw_Statistics_Renamed <- Raw_Statistics_Names %>% # rename columns for ease of 
 # Step 5: Calculate WHIP
 Raw_Statistics_WHIP <- Raw_Statistics_Renamed %>%
   mutate( # Calculate WHIP using mutate to create a new column
-    "WHIP" = (walk + hit)/(IP) # use PEMDAS to ensure proper calculation
+    "WHIP" = (walk + hit)/(IP)
     ) 
 
 # Step 6: Remove Extra Columns
-Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>% # remove extra columns so only useful data remains
+Cleaned_ERA_Statistics <- Raw_Statistics_WHIP %>%
   select(Name, K_rate, BB_rate, OBP, WHIP, ERA)
 
 # Step 7: Round WHIP
@@ -115,7 +122,7 @@ Frequency_Table %>%
 #| layout-ncol: 2
 #| fig-alt: "Four graphs that show the correlation between ERA and specific statistics"
 
-# Step 7 K% Plot:
+# Step 10 K% Plot:
 x <- Cleaned_ERA_Statistics$ERA
 y <- Cleaned_ERA_Statistics$K_rate
 r <- cor( x, y, method = "pearson")
@@ -127,17 +134,17 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size to improve readability
   labs(
     title = "K% vs ERA over a 10-Year Span (Excluding 2020)",
     subtitle = paste0("R = ", round(r, digits = 3)),
     x = "K%",
     y = "ERA"
   ) + 
-  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit
   theme_classic() # a visual polish adjustment
 
-# Step 8 BB% Plot
+# Step 11 BB% Plot
 x <- Cleaned_ERA_Statistics$ERA
 y <- Cleaned_ERA_Statistics$BB_rate
 r <- cor( x, y, method = "pearson")
@@ -149,18 +156,18 @@ ggplot(
     y = ERA,
   )
 ) +
-  geom_point(alpha = 0.2) + # increased line size a little to improve readability
+  geom_point(alpha = 0.2) + # increased line size to improve readability
   labs(
     title = "BB% vs ERA over a 10-Year Span (Excluding 2020)",
     subtitle = paste0("R = ", round(r, digits = 3)),
     x = "BB%",
     y = "ERA"
   ) + 
-  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
-# Step 9 OBP Plot
+# Step 12 OBP Plot
 
 x <- Cleaned_ERA_Statistics$ERA
 y <- Cleaned_ERA_Statistics$OBP
@@ -180,11 +187,11 @@ ggplot(
     x = "OBP",
     y = "ERA"
   ) + 
-  geom_smooth(alpha = 0.1) + # a line of best fit to more clearly see the correlation
+  geom_smooth(alpha = 0.1) + # a line of best fit
   theme_classic() + # a visual polish adjustment
   scale_x_reverse()
 
-# Step 10 WHIP Plot
+# Step 13 WHIP Plot
 
 r <- summary(
   lm(ERA ~ WHIP,
@@ -218,27 +225,31 @@ ggplot(
 #| fig-width: 8
 #| fig-height: 6
 
+# Step 14 correlation table to see the relation between statistics
+
 cors <- cor(Cleaned_ERA_Statistics[, -1])
 corPlot(cors)
 ```
 
-
 ## Long descriptions for @fig-correlation_plot
 
-### Long Description for K%
+### (a) K% vs ERA
 The image is a scatter plot illustrating the relationship between strikeout percentage (K%) and earned run average (ERA) over a ten-year span, excluding 2020. The horizontal axis represents K%, ranging from 10 to 40, while the vertical axis represents ERA, ranging from 2 to 7. Numerous small, gray circles are scattered across the chart, indicating individual data points. A blue line with a downward slope runs through the center of the plot, representing a trend line, with a gray shaded area around it indicating the confidence interval.
 
-### Long Description for BB%
+### (b) BB% vs ERA
 The image is a scatter plot depicting the relationship between BB% (Base on Balls Percentage) and ERA (Earned Run Average) over a 10-year span, excluding the year 2020. The x-axis represents BB%, ranging from 16 to 4, while the y-axis represents ERA, ranging from 2 to 7. The plot contains numerous small, light gray dots scattered throughout, representing individual data points. A blue trend line traverses the plot diagonally from upper left to lower right, indicating a negative correlation between BB% and ERA. The trend line is surrounded by a gray shaded region that illustrates the confidence interval. The background of the plot is white, and the text is black.
 
-### Long Description for OBP
+### (c) OBP vs ERA
 The image is a scatter plot showing the relationship between OBP (On-base Percentage) and ERA (Earned Run Average) over a ten-year span, excluding the year 2020. The x-axis represents OBP, ranging from 0.20 to 0.40, while the y-axis represents ERA, ranging from 2 to 6. Data points are represented by small gray dots scattered across the plot, showing a downward trend from left to right. A blue trend line runs diagonally from the top left to the bottom right, indicating a negative correlation between OBP and ERA. A shaded gray area around the line illustrates the confidence interval. The title of the plot is "OBP vs ERA over a 10-Year Span (Excluding 2020)."
 
-### Long Description for WHIP
+### (d) WHIP vs ERA
 The image is a scatter plot graph illustrating the relationship between WHIP (Walks plus Hits per Inning Pitched) and ERA (Earned Run Average) over a ten-year span, excluding 2020. The x-axis is labeled "WHIP" and ranges approximately from 0.9 to 1.8. The y-axis is labeled "ERA" and ranges from 2 to 6. A blue trend line, with a shaded confidence interval, slopes downward from left to right, indicating a negative correlation between WHIP and ERA. Numerous small, gray data points are scattered densely around the trend line.
 
 ## Long descriptions for @fig-correlation_table
 The image is a correlation plot presented as a heatmap, depicting the relationships among five variables: K_rate, BB_rate, OBP, WHIP, and ERA. The plot is structured as a grid with rows and columns labeled with these variables. Each cell in the grid contains a numerical value representing the correlation coefficient between the corresponding pair of variables. The background color of each cell indicates the strength and direction of the correlation, using a gradient scale from blue to red. Blue shades represent positive correlations, while red shades denote negative correlations. The plot features a small color bar on the right, displaying a continuous range from -1 to 1, corresponding to the colors used in the plot. The diagonal cells show a perfect correlation of 1.00, displayed in dark blue. Other notable correlations include -0.64 between K_rate and OBP, and 0.99 between OBP and WHIP.
+
+## Results
+Of the four statistics that we observed, WHIP and OBP were the most correlated with ERA. The correlation table however shows that WHIP and OBP are nearly identical, implying that they are describing the same thing. Both statistics are a type of measure about how many runners a pitcher lets on base. This means that ERA is heavily influenced by the amount of runners a pitcher lets on base. By whatever measure you chose, be it WHIP or OBP, both show a strong negative correlation with ERA.
 
 
 # Code Appendix 
